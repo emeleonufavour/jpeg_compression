@@ -25,7 +25,6 @@ static const uint8_t STD_QUANT_TABLE_C[BLOCK_SIZE][BLOCK_SIZE] = {
     {99, 99, 99, 99, 99, 99, 99, 99},
     {99, 99, 99, 99, 99, 99, 99, 99}};
 
-// Add Huffman tables (standard JPEG tables)
 static const uint8_t STD_DC_LUMINANCE_CODES[] = {0, 1, 5, 1, 1, 1, 1, 1, 1, 0, 0, 0}; // BITS
 static const uint8_t STD_DC_LUMINANCE_VALUES[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
@@ -51,10 +50,10 @@ static const uint8_t STD_AC_LUMINANCE_VALUES[] = {
 int init_huffman_tables(JpegState *state)
 {
     // Standard DC and AC Huffman table values
-    static const uint8_t DC_LUMINANCE_BITS[] = {0, 1, 5, 1, 1, 1, 1, 1, 1, 0, 0, 0}; // 12 values
+    static const uint8_t DC_LUMINANCE_BITS[] = {0, 1, 5, 1, 1, 1, 1, 1, 1, 0, 0, 0};
     static const uint8_t DC_LUMINANCE_VALUES[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
-    static const uint8_t AC_LUMINANCE_BITS[] = {0, 2, 1, 3, 3, 2, 4, 3, 5, 5, 4, 4, 0, 0, 1, 125}; // 16 values
+    static const uint8_t AC_LUMINANCE_BITS[] = {0, 2, 1, 3, 3, 2, 4, 3, 5, 5, 4, 4, 0, 0, 1, 125};
     static const uint8_t AC_LUMINANCE_VALUES[] = {
         0x01, 0x02, 0x03, 0x00, 0x04, 0x11, 0x05, 0x12,
         0x21, 0x31, 0x41, 0x06, 0x13, 0x51, 0x61, 0x07,
@@ -73,7 +72,7 @@ int init_huffman_tables(JpegState *state)
         0xa8, 0xa9, 0xaa, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6,
         0xb7, 0xb8, 0xb9, 0xba, 0xc2, 0xc3, 0xc4, 0xc5};
 
-    // Standard DC and AC chrominance tables (similar structure)
+    // Standard DC and AC chrominance tables
     static const uint8_t DC_CHROMINANCE_BITS[] = {0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
     static const uint8_t DC_CHROMINANCE_VALUES[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
@@ -105,7 +104,7 @@ int init_huffman_tables(JpegState *state)
     if (!state->dc_table_y.codes || !state->ac_table_y.codes ||
         !state->dc_table_c.codes || !state->ac_table_c.codes)
     {
-        return -1; // Memory allocation failed
+        return -1;
     }
 
     // Initialize DC luminance table
@@ -175,7 +174,7 @@ int init_huffman_tables(JpegState *state)
     return 0;
 }
 
-// Enhanced buffer management
+// buffer management
 static void ensure_buffer_capacity(JpegState *state, size_t needed_size)
 {
     if (state->buffer_position + needed_size > state->buffer_size)
@@ -212,7 +211,6 @@ static void write_byte(JpegState *state, uint8_t byte)
     state->output_buffer[state->buffer_position++] = byte;
 }
 
-// Utility functions for writing to output buffer
 static void write_marker(JpegState *state, JpegMarker marker)
 {
     write_byte(state, 0xFF);
@@ -325,7 +323,7 @@ static void write_sos(JpegState *state)
     write_byte(state, 0);  // Successive approximation
 }
 
-// Enhanced bit writing with overflow protection
+// bit writing with overflow protection
 void write_bits(JpegState *state, uint32_t bits, int bit_count)
 {
     if (bit_count <= 0 || bit_count > 32)
@@ -394,8 +392,7 @@ static void build_huffman_tables(JpegState *state)
     }
     state->ac_table_y.count = 162;
 
-    // Build DC/AC chrominance tables (similar process)
-    // ... Similar process for chrominance tables ...
+    // TODO: Build DC/AC chrominance tables (similar process)
 }
 
 static void huffman_encode_block(JpegState *state, const RLECode *codes, size_t count)
@@ -466,8 +463,6 @@ static void huffman_encode_block(JpegState *state, const RLECode *codes, size_t 
     }
 }
 
-// This function is like magic! It takes our normal picture and turns it into special numbers
-// Imagine taking a rainbow and splitting it into different colors
 static DctBlock apply_dct(const uint8_t input[BLOCK_SIZE][BLOCK_SIZE])
 {
     DctBlock dct = {0};
@@ -498,8 +493,6 @@ static DctBlock apply_dct(const uint8_t input[BLOCK_SIZE][BLOCK_SIZE])
     return dct;
 }
 
-// This function is like being a neat person - we round numbers to make them simpler
-// Just like saying "I'm almost 6 years old" instead of "I'm 5 years, 11 months, and 25 days old"
 static void quantize_block(DctBlock *dct, const uint8_t quant_table[BLOCK_SIZE][BLOCK_SIZE])
 {
     for (int u = 0; u < BLOCK_SIZE; u++)
@@ -516,7 +509,7 @@ const int ZIGZAG_PATTERN[64][2] = {
 
 void zigzag_scan(const DctBlock *dct, int output[BLOCK_SIZE * BLOCK_SIZE])
 {
-    // Follow the zigzag path like a treasure map!
+
     for (int i = 0; i < BLOCK_SIZE * BLOCK_SIZE; i++)
     {
         int row = ZIGZAG_PATTERN[i][0];
@@ -531,25 +524,23 @@ int run_length_encode(const int zigzag[BLOCK_SIZE * BLOCK_SIZE],
     int code_count = 0;
     int zero_count = 0;
 
-    // Look at each number in our zigzag path
     for (int i = 0; i < BLOCK_SIZE * BLOCK_SIZE; i++)
     {
         if (zigzag[i] == 0)
         {
-            // Count another zero!
+
             zero_count++;
         }
         else
         {
-            // Found a non-zero number! Remember how many zeros came before it
+
             output[code_count].run_length = zero_count;
             output[code_count].value = zigzag[i];
             code_count++;
-            zero_count = 0; // Start counting zeros again
+            zero_count = 0;
         }
     }
 
-    // If we ended with zeros, we need to remember that too
     if (zero_count > 0)
     {
         output[code_count].run_length = 0;
@@ -560,7 +551,7 @@ int run_length_encode(const int zigzag[BLOCK_SIZE * BLOCK_SIZE],
     return code_count;
 }
 
-// Enhanced compression pipeline
+// compression pipeline
 static void process_mcu(JpegState *state, uint32_t x, uint32_t y)
 {
     uint8_t block[BLOCK_SIZE][BLOCK_SIZE];
@@ -713,8 +704,6 @@ static void apply_chroma_subsampling(JpegState *state)
     }
 }
 
-// This function follows our zigzag path and collects all the numbers in order
-
 // Initialize quantization tables with quality scaling
 static void init_quantization_tables(JpegState *state)
 {
@@ -788,9 +777,6 @@ void jpeg_cleanup(JpegState *state)
 }
 
 // Initialize JPEG compression state
-
-// Add proper initialization function
-// Input validation and initialization enhancements
 JpegState *jpeg_init(uint32_t width, uint32_t height, uint8_t quality)
 {
     // Validate input parameters
@@ -927,7 +913,7 @@ void write_jpeg_header(JpegState *state)
     write_marker(state, MARKER_SOI);
 
     // Write JFIF APP0 marker
-    write_app0(state); // TODO: Implement write_app
+    write_app0(state);
 
     // Write quantization tables
     write_dqt(state);
@@ -936,10 +922,10 @@ void write_jpeg_header(JpegState *state)
     write_sof0(state);
 
     // Write Huffman tables
-    write_dht(state); // TODO: Implement write dht
+    write_dht(state);
 
     // Write Start of Scan
-    write_sos(state); // TODO: Implement write_sos
+    write_sos(state);
 }
 
 // Write JPEG file trailer
