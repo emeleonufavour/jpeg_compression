@@ -1,6 +1,3 @@
-// jpeg_compress.c
-// Main JPEG compression implementation integrating all components
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -1,4 +1,3 @@
-// jpeg_common.h
 #ifndef JPEG_COMMON_H
 #define JPEG_COMMON_H
 
@@ -96,39 +95,5 @@ typedef struct
     int16_t last_dc_cb; // Last DC value for Cb component
     int16_t last_dc_cr; // Last DC value for Cr component
 } JpegState;
-
-// Standard quantization tables
-// extern const uint8_t STD_QUANT_TABLE_Y[BLOCK_SIZE][BLOCK_SIZE];
-// extern const uint8_t STD_QUANT_TABLE_C[BLOCK_SIZE][BLOCK_SIZE];
-
-// Core functions
-// JpegState *jpeg_init(uint32_t width, uint32_t height, uint8_t quality);
-// void jpeg_cleanup(JpegState *state);
-// int jpeg_compress(JpegState *state, const char *output_filename);
-
-// // Component functions
-// YCbCr rgb_to_ycbcr(RGB pixel);
-// void subsample_ycbcr(JpegState *state);
-// DctBlock apply_dct(const uint8_t block[BLOCK_SIZE][BLOCK_SIZE]);
-// void quantize_block(DctBlock *block, const uint8_t quant_table[BLOCK_SIZE][BLOCK_SIZE]);
-// void zigzag_scan(const DctBlock *block, int16_t *output);
-// int run_length_encode(const int16_t *data, RLECode *codes, size_t data_len);
-
-// // Huffman coding functions
-// void init_huffman_tables(JpegState *state);
-// void huffman_encode_block(JpegState *state, const RLECode *codes, size_t code_count,
-//                           int is_dc, int is_chroma);
-
-// // Bit writing functions
-// void write_bits(JpegState *state, uint32_t bits, int bit_count);
-// void flush_bits(JpegState *state);
-
-// // JPEG segment writing functions
-// void write_soi(JpegState *state);
-// void write_eoi(JpegState *state);
-// void write_dqt(JpegState *state);
-// void write_sof0(JpegState *state);
-// void write_dht(JpegState *state);
-// void write_sos(JpegState *state);
 
 #endif // JPEG_COMMON_H

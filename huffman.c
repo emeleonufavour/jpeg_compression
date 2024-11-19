@@ -6,7 +6,7 @@
 #define MAX_SYMBOLS 256
 #define MAX_TREE_NODES (MAX_SYMBOLS * 2 - 1)
 
-// Huffman tree node structure
+// The Huffman tree node structure
 typedef struct HuffmanNode
 {
     int symbol;    // Original symbol (or -1 for internal nodes)
@@ -16,7 +16,7 @@ typedef struct HuffmanNode
     char *code;    // Huffman code for the symbol
 } HuffmanNode;
 
-// Structure to store symbol frequencies
+// The structure to store symbol frequencies
 typedef struct
 {
     int symbol;
